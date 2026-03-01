@@ -45,33 +45,73 @@
     <Hosts>
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
+
           <GetStarted>
             <Title resid="GetStarted.Title"/>
             <Description resid="GetStarted.Description"/>
             <LearnMoreUrl resid="GetStarted.LearnMoreUrl"/>
           </GetStarted>
+
           <FunctionFile resid="Taskpane.Url"/>
+
+          <!-- 🔥 Ribbon Button -->
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="DataHygiene.Group">
+                <Label resid="GroupLabel"/>
+
+                <Control xsi:type="Button" id="DataHygiene.Button">
+                  <Label resid="Button.Label"/>
+                  <Supertip>
+                    <Title resid="Button.Label"/>
+                    <Description resid="Button.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+
         </DesktopFormFactor>
       </Host>
     </Hosts>
 
+    <!-- 🔥 Required Resources -->
     <Resources>
+
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-80.png"/>
+      </bt:Images>
+
       <bt:Urls>
         <bt:Url id="Taskpane.Url" DefaultValue="https://soft-fairy-0556e7.netlify.app/index.html"/>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://soft-fairy-0556e7.netlify.app"/>
       </bt:Urls>
 
       <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="DataHygiene"/>
+        <bt:String id="Button.Label" DefaultValue="Open DataHygiene"/>
         <bt:String id="GetStarted.Title" DefaultValue="Welcome to DataHygiene"/>
       </bt:ShortStrings>
 
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Clean and standardize your spreadsheet data instantly."/>
+        <bt:String id="Button.Tooltip" DefaultValue="Clean and standardize your spreadsheet data instantly."/>
+        <bt:String id="GetStarted.Description" DefaultValue="Clean and normalize your spreadsheet data with one click."/>
       </bt:LongStrings>
+
     </Resources>
 
   </VersionOverrides>
 
 </OfficeApp>
-
-
