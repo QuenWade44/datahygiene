@@ -17,10 +17,10 @@
   <IconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-80.png"/>
 
-  <SupportUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/"/>
+  <SupportUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app"/>
 
   <AppDomains>
-    <AppDomain>https://glowing-babka-5bcaf8.netlify.app/</AppDomain>
+    <AppDomain>https://glowing-babka-5bcaf8.netlify.app</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -35,3 +35,4 @@
 
 
 </OfficeApp>
+
