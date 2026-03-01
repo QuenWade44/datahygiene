@@ -1,254 +1,192 @@
-/* ============================================================
-   DataHygiene CRM — Office.js Add-in Service
-   Mirrors the Python DataCleanerWorker logic on the active sheet
-   ============================================================ */
+let isRunning = false;
 
-Office.onReady(function (info) {
-  if (info.host === Office.HostType.Excel) {
-    scanSheet(); // populate stats on load
+Office.onReady((info) => {
+  if (info.host !== Office.HostType.Excel) {
+    log("This add-in only runs inside Excel.", "err");
+    return;
   }
+
+  document.getElementById("btn-clean")
+    .addEventListener("click", runClean);
+
+  scanSheet();
 });
 
-// ─── UI HELPERS ─────────────────────────────────────────────
+/* ---------------- UI Helpers ---------------- */
 
 function setProgress(pct, label) {
   document.getElementById("progress-fill").style.width = pct + "%";
   document.getElementById("progress-pct").textContent = pct + "%";
-  document.getElementById("progress-text").textContent = label || "";
+  document.getElementById("progress-text").textContent = label;
 }
 
-function log(msg, type) {
+function log(msg, type = "info") {
   const el = document.getElementById("log");
-  const line = document.createElement("span");
-  line.className = "line " + (type || "");
-  line.textContent = msg;
-  el.innerHTML = "";
-  el.appendChild(line);
+  el.innerHTML = `<span class="line ${type}">${msg}</span>`;
 }
 
-function setOpState(id, state) {
-  // state: '' | 'active' | 'done'
+function setOpState(id, state = "") {
   const el = document.getElementById(id);
-  el.className = "op-item " + state;
+  el.className = `op-item ${state}`;
 }
 
 function resetOps() {
-  ["op-strip", "op-email", "op-name", "op-date", "op-address", "op-dedup"]
-    .forEach(id => setOpState(id, ""));
+  ["op-strip","op-email","op-name","op-date","op-address","op-dedup"]
+    .forEach(id => setOpState(id));
 }
 
-// ─── SCAN SHEET (load stats on open) ────────────────────────
+/* ---------------- Sheet Scan ---------------- */
 
 async function scanSheet() {
   try {
-    await Excel.run(async (ctx) => {
+    await Excel.run(async ctx => {
       const sheet = ctx.workbook.worksheets.getActiveWorksheet();
       const used = sheet.getUsedRange();
-      used.load(["rowCount", "columnCount"]);
+      used.load("rowCount");
       await ctx.sync();
-      const rows = Math.max(0, used.rowCount - 1); // minus header
-      document.getElementById("stat-rows").textContent = rows.toLocaleString();
+
+      const rows = Math.max(0, used.rowCount - 1);
+      document.getElementById("stat-rows").textContent = rows;
       document.getElementById("stat-removed").textContent = "—";
-      log(`Sheet loaded: ${rows} data rows detected.`, "info");
+
+      setProgress(0, "Ready");
+      log(`Detected ${rows} data rows.`, "info");
     });
   } catch (e) {
-    log("Could not read sheet.", "err");
+    log("Unable to access sheet.", "err");
   }
 }
 
-// ─── MAIN ENTRY POINT ───────────────────────────────────────
+/* ---------------- Main Cleaning ---------------- */
 
 async function runClean() {
+  if (isRunning) return;
+  isRunning = true;
+
   const btn = document.getElementById("btn-clean");
   btn.disabled = true;
   btn.classList.add("running");
-  btn.textContent = "⏳ Cleaning...";
+  btn.textContent = "Cleaning...";
+
   resetOps();
-  setProgress(0, "Starting...");
-  document.getElementById("stat-removed").textContent = "—";
+  setProgress(5, "Starting...");
 
   try {
-    await Excel.run(async (ctx) => {
+    await Excel.run(async ctx => {
 
       const sheet = ctx.workbook.worksheets.getActiveWorksheet();
       const used = sheet.getUsedRange();
-      used.load(["values", "rowCount", "columnCount"]);
+      used.load(["values","rowCount","columnCount"]);
       await ctx.sync();
 
       const values = used.values;
       if (!values || values.length < 2) {
-        log("Sheet has no data rows.", "err");
+        log("No data rows found.", "err");
         return;
       }
 
-      const headers = values[0].map(h => (h || "").toString().trim().toLowerCase());
-      const originalRowCount = values.length - 1;
-      document.getElementById("stat-rows").textContent = originalRowCount.toLocaleString();
+      const headers = values[0].map(h => String(h).toLowerCase().trim());
+      let rows = values.slice(1);
 
-      setProgress(10, "Reading sheet...");
-      log("Reading active sheet...", "info");
+      const originalCount = rows.length;
 
-      // ── Step 1: Strip whitespace ──────────────────────────
-      setOpState("op-strip", "active");
-      let rows = values.slice(1).map(row =>
-        row.map(cell => (typeof cell === "string" ? cell.trim() : cell))
-      );
-      setOpState("op-strip", "done");
-      setProgress(20, "Stripping whitespace...");
-      await delay(120);
+      /* Strip whitespace */
+      setOpState("op-strip","active");
+      rows = rows.map(r => r.map(c => typeof c === "string" ? c.trim() : c));
+      setOpState("op-strip","done");
+      setProgress(20,"Stripping whitespace");
 
-      // ── Step 2: Drop fully-empty rows ─────────────────────
-      rows = rows.filter(row => row.some(cell => cell !== "" && cell !== null && cell !== undefined));
+      /* Remove empty */
+      rows = rows.filter(r => r.some(c => c !== "" && c != null));
 
-      // ── Step 3: Column-level transformations ──────────────
-      const totalCols = headers.length;
-
-      for (let ci = 0; ci < totalCols; ci++) {
-        const col = headers[ci];
+      /* Column transforms */
+      for (let i=0;i<headers.length;i++) {
+        const col = headers[i];
 
         if (col.includes("email")) {
-          setOpState("op-email", "active");
-          rows = rows.map(r => { r[ci] = cleanEmail(r[ci]); return r; });
-          setOpState("op-email", "done");
+          setOpState("op-email","active");
+          rows = rows.map(r => { r[i] = cleanEmail(r[i]); return r; });
+          setOpState("op-email","done");
         }
 
         if (col.includes("name")) {
-          setOpState("op-name", "active");
-          rows = rows.map(r => { r[ci] = capitalizeName(r[ci]); return r; });
-          setOpState("op-name", "done");
+          setOpState("op-name","active");
+          rows = rows.map(r => { r[i] = capitalizeName(r[i]); return r; });
+          setOpState("op-name","done");
         }
 
         if (col.includes("date")) {
-          setOpState("op-date", "active");
-          rows = rows.map(r => { r[ci] = parseDate(r[ci]); return r; });
-          setOpState("op-date", "done");
+          setOpState("op-date","active");
+          rows = rows.map(r => { r[i] = parseDate(r[i]); return r; });
+          setOpState("op-date","done");
         }
 
         if (col.includes("address")) {
-          setOpState("op-address", "active");
-          rows = rows.map(r => { r[ci] = normalizeAddress(r[ci]); return r; });
-          setOpState("op-address", "done");
+          setOpState("op-address","active");
+          rows = rows.map(r => { r[i] = normalizeAddress(r[i]); return r; });
+          setOpState("op-address","done");
         }
 
-        const pct = 25 + Math.round(((ci + 1) / totalCols) * 45);
-        setProgress(pct, "Transforming columns...");
-        await delay(30);
+        setProgress(30 + Math.round((i/headers.length)*40),"Transforming columns");
       }
 
-      setProgress(75, "Removing duplicates...");
-      await delay(100);
+      /* Deduplicate */
+      setOpState("op-dedup","active");
+      const unique = Array.from(new Set(rows.map(r => JSON.stringify(r))))
+        .map(r => JSON.parse(r));
+      setOpState("op-dedup","done");
 
-      // ── Step 4: Deduplicate ───────────────────────────────
-      setOpState("op-dedup", "active");
-      const seen = new Set();
-      const deduped = [];
-      for (const row of rows) {
-        const key = JSON.stringify(row);
-        if (!seen.has(key)) {
-          seen.add(key);
-          deduped.push(row);
-        }
-      }
-      setOpState("op-dedup", "done");
+      const removed = originalCount - unique.length;
 
-      const removedCount = originalRowCount - deduped.length;
-      setProgress(90, "Writing back to sheet...");
-      await delay(80);
-
-      // ── Step 5: Write back ────────────────────────────────
-      // Clear old data area and write header + cleaned rows
-      const newValues = [values[0], ...deduped];
-      const writeRange = sheet.getRangeByIndexes(0, 0, newValues.length, headers.length);
-      writeRange.values = newValues;
-
-      // Clear any rows below the new data (leftover from original)
-      if (originalRowCount > deduped.length) {
-        const clearStart = newValues.length;
-        const clearRows = originalRowCount - deduped.length;
-        const clearRange = sheet.getRangeByIndexes(clearStart, 0, clearRows, headers.length);
-        clearRange.clear(Excel.ClearApplyTo.contents);
-      }
-
+      /* Write back */
+      const newData = [values[0], ...unique];
+      sheet.getRangeByIndexes(0,0,newData.length,headers.length).values = newData;
       await ctx.sync();
 
-      setProgress(100, "Done");
-      document.getElementById("stat-rows").textContent = deduped.length.toLocaleString();
-      document.getElementById("stat-removed").textContent = removedCount.toLocaleString();
-      log(`✓ Cleaned. Removed ${removedCount} row(s). Final: ${deduped.length} rows.`, "ok");
+      document.getElementById("stat-rows").textContent = unique.length;
+      document.getElementById("stat-removed").textContent = removed;
+
+      setProgress(100,"Complete");
+      log(`Removed ${removed} duplicate rows.`, "ok");
     });
 
   } catch (e) {
     log("Error: " + e.message, "err");
-    setProgress(0, "Failed");
+    setProgress(0,"Failed");
   }
 
   btn.disabled = false;
   btn.classList.remove("running");
   btn.textContent = "▶ Clean Data";
+  isRunning = false;
 }
 
-// ─── TRANSFORMATION FUNCTIONS ────────────────────────────────
-// Mirrors DataCleanerWorker methods from the Python app
+/* ---------------- Transform Helpers ---------------- */
 
-function cleanEmail(email) {
-  if (email === null || email === undefined || email === "") return "";
-  email = String(email).trim().toLowerCase();
-  email = email.replace(/,/g, ".");
-  email = email.replace(/atexample/g, "@example");
-  if (!email.includes("@") && email.includes("example")) {
-    const parts = email.split("example");
-    email = parts[0] + "@example" + parts.slice(1).join("example");
-  }
-  return email;
+function cleanEmail(email){
+  if (!email) return "";
+  return String(email).trim().toLowerCase();
 }
 
-function capitalizeName(name) {
-  if (name === null || name === undefined || name === "") return name;
+function capitalizeName(name){
+  if (!name) return "";
   return String(name)
     .split(" ")
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .map(w => w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())
     .join(" ");
 }
 
-function parseDate(val) {
-  if (val === null || val === undefined || String(val).trim() === "") return "";
-  // Excel stores dates as serial numbers or strings
-  const s = String(val).trim();
-  // Try to detect Excel serial number (pure integer ~30000-60000)
-  if (/^\d{4,5}$/.test(s)) {
-    const serial = parseInt(s, 10);
-    if (serial > 25569 && serial < 80000) {
-      // Convert Excel serial to JS date (Excel epoch: Jan 1 1900, JS epoch: Jan 1 1970)
-      const msDate = (serial - 25569) * 86400 * 1000;
-      return formatDate(new Date(msDate));
-    }
-  }
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) return formatDate(d);
-  return val; // return original if unparseable
+function parseDate(val){
+  if (!val) return "";
+  const d = new Date(val);
+  if (isNaN(d)) return val;
+  return d.toISOString().split("T")[0];
 }
 
-function formatDate(d) {
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function normalizeAddress(address) {
-  if (address === null || address === undefined || address === "") return "";
-  // Capitalize each word
-  let addr = String(address)
+function normalizeAddress(addr){
+  if (!addr) return "";
+  return String(addr)
     .split(" ")
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .map(w => w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())
     .join(" ");
-  // Uppercase 2-letter state codes (word boundaries)
-  addr = addr.replace(/\b([A-Za-z]{2})\b/g, (m) => m.toUpperCase());
-  return addr;
-}
-
-// ─── UTILITY ─────────────────────────────────────────────────
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
