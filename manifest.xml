@@ -14,12 +14,12 @@
   <DisplayName DefaultValue="DataHygiene"/>
   <Description DefaultValue="Clean and normalize spreadsheet data with one click."/>
 
-  <IconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-80.png"/>
-  <SupportUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app"/>
+  <IconUrl DefaultValue="https://quenwade44.github.io/datahygiene/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://quenwade44.github.io/datahygiene/icon-80.png"/>
+  <SupportUrl DefaultValue="https://quenwade44.github.io/datahygiene"/>
 
   <AppDomains>
-    <AppDomain>https://glowing-babka-5bcaf8.netlify.app</AppDomain>
+    <AppDomain>https://quenwade44.github.io/datahygiene/</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -33,7 +33,7 @@
   </Requirements>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://glowing-babka-5bcaf8.netlify.app/index.html"/>
+    <SourceLocation DefaultValue="https://quenwade44.github.io/datahygiene/index.html"/>
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
@@ -57,8 +57,8 @@
 
     <Resources>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://glowing-babka-5bcaf8.netlify.app/index.html"/>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://glowing-babka-5bcaf8.netlify.app"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://quenwade44.github.io/datahygiene/index.html"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://quenwade44.github.io/datahygiene"/>
       </bt:Urls>
 
       <bt:ShortStrings>
@@ -73,3 +73,4 @@
   </VersionOverrides>
 
 </OfficeApp>
+
