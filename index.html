@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DataHygiene</title>
+
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  
+  <style>
+    /* --- (your entire existing CSS stays exactly the same) --- */
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-badge">Excel Add-in</div>
+  <h1>Data<span>Hygiene</span></h1>
+  <p class="header-sub">Active Workbook Data Cleaner</p>
+</header>
+
+<main>
+
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-label">Total Rows</div>
+      <div class="stat-value" id="stat-rows">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Removed</div>
+      <div class="stat-value accent" id="stat-removed">—</div>
+    </div>
+  </div>
+
+  <div class="ops-panel">
+    <div class="ops-header">Operations</div>
+    <div class="op-item" id="op-strip"><div class="op-dot"></div>Strip whitespace</div>
+    <div class="op-item" id="op-email"><div class="op-dot"></div>Normalize emails</div>
+    <div class="op-item" id="op-name"><div class="op-dot"></div>Capitalize names</div>
+    <div class="op-item" id="op-date"><div class="op-dot"></div>Parse dates → YYYY-MM-DD</div>
+    <div class="op-item" id="op-address"><div class="op-dot"></div>Normalize addresses</div>
+    <div class="op-item" id="op-dedup"><div class="op-dot"></div>Remove duplicates</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="progress-text">Initializing…</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="log" id="log">
+    <span class="line">Waiting for Excel...</span>
+  </div>
+
+  <button class="btn-clean" id="btn-clean">
+    ▶ Clean Data
+  </button>
+
+</main>
+
+<footer>
+  <div class="cta-card">
+    <div class="cta-icon">🖥️</div>
+    <div class="cta-text">
+      <strong>DataHygiene Desktop</strong>
+      <small>Batch processing & advanced audit logs</small>
+    </div>
+    <a class="btn-cta" href="https://soft-fairy-0556e7.netlify.app" target="_blank">
+      Learn More →
+    </a>
+  </div>
+</footer>
+
+<script src="taskpane.js"></script>
+
+</body>
+</html>
