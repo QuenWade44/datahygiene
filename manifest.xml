@@ -14,12 +14,12 @@
   <DisplayName DefaultValue="DataHygiene"/>
   <Description DefaultValue="Clean and normalize spreadsheet data with one click."/>
 
-  <IconUrl DefaultValue="https://quenwade44.github.io/datahygiene/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://quenwade44.github.io/datahygiene/icon-80.png"/>
-  <SupportUrl DefaultValue="https://quenwade44.github.io/datahygiene"/>
+  <IconUrl DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-80.png"/>
+  <SupportUrl DefaultValue="https://soft-fairy-0556e7.netlify.app"/>
 
   <AppDomains>
-    <AppDomain>https://quenwade44.github.io/datahygiene/</AppDomain>
+    <AppDomain>https://soft-fairy-0556e7.netlify.app</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -33,7 +33,7 @@
   </Requirements>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://quenwade44.github.io/datahygiene/index.html"/>
+    <SourceLocation DefaultValue="https://soft-fairy-0556e7.netlify.app/index.html"/>
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
@@ -57,8 +57,8 @@
 
     <Resources>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://quenwade44.github.io/datahygiene/index.html"/>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://quenwade44.github.io/datahygiene"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://soft-fairy-0556e7.netlify.app/index.html"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://soft-fairy-0556e7.netlify.app"/>
       </bt:Urls>
 
       <bt:ShortStrings>
@@ -73,4 +73,5 @@
   </VersionOverrides>
 
 </OfficeApp>
+
 
