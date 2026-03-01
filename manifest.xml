@@ -12,8 +12,6 @@
   <DisplayName DefaultValue="DataHygiene"/>
   <Description DefaultValue="Clean and normalize spreadsheet data with one click."/>
 
-  <IconUrl DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://soft-fairy-0556e7.netlify.app/icon-80.png"/>
   <SupportUrl DefaultValue="https://soft-fairy-0556e7.netlify.app"/>
 
   <AppDomains>
