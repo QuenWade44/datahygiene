@@ -14,13 +14,13 @@
   <DisplayName DefaultValue="DataHygiene"/>
   <Description DefaultValue="Clean spreadsheet data with one click."/>
 
-  <IconUrl DefaultValue="https://YOUR_NETLIFY_URL/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://YOUR_NETLIFY_URL/icon-80.png"/>
+  <IconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/icon-80.png"/>
 
-  <SupportUrl DefaultValue="https://YOUR_NETLIFY_URL"/>
+  <SupportUrl DefaultValue="https://glowing-babka-5bcaf8.netlify.app/"/>
 
   <AppDomains>
-    <AppDomain>https://YOUR_NETLIFY_URL</AppDomain>
+    <AppDomain>https://glowing-babka-5bcaf8.netlify.app/</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -28,9 +28,10 @@
   </Hosts>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://YOUR_NETLIFY_URL/index.html"/>
+    <SourceLocation DefaultValue="https://glowing-babka-5bcaf8.netlify.app/index.html"/>
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
+
 
 </OfficeApp>
